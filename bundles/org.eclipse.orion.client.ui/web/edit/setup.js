@@ -14,14 +14,14 @@
 
 define(['i18n!orion/edit/nls/messages', 'require', 'orion/Deferred', 'orion/webui/littlelib', 'orion/selection', 'orion/status', 'orion/progress', 'orion/dialogs',
         'orion/commandRegistry', 'orion/favorites', 'orion/extensionCommands', 'orion/fileClient', 'orion/operationsClient', 'orion/searchClient', 'orion/globalCommands', 'orion/outliner',
-        'orion/problems', 'orion/editor/contentAssist', 'orion/editorCommands', 'orion/editor/editorFeatures', 'orion/editor/editor', 'orion/syntaxchecker',
+        'orion/problems', 'orion/editor/contentAssist', 'orion/editorCommands', 'orion/editor/editorFeatures', 'orion/editor/editor', 'orion/syntaxchecker', 'orion/markOccurrences',
         'orion/editor/textView', 'orion/editor/textModel', 
         'orion/editor/projectionTextModel', 'orion/keyBinding','orion/searchAndReplace/textSearcher',
         'orion/edit/dispatcher', 'orion/contentTypes', 'orion/PageUtil', 'orion/highlight', 'orion/i18nUtil', 'orion/edit/syntaxmodel',
         'orion/widgets/themes/ThemePreferences', 'orion/widgets/themes/editor/ThemeData', 'orion/widgets/themes/editor/MiniThemeChooser'],
 		function(messages, require, Deferred, lib, mSelection, mStatus, mProgress, mDialogs, mCommandRegistry, mFavorites, mExtensionCommands, 
 				mFileClient, mOperationsClient, mSearchClient, mGlobalCommands, mOutliner, mProblems, mContentAssist, mEditorCommands, mEditorFeatures, mEditor,
-				mSyntaxchecker, mTextView, mTextModel, mProjectionTextModel, mKeyBinding, mSearcher,
+				mSyntaxchecker, mMarkOccurrences ,mTextView, mTextModel, mProjectionTextModel, mKeyBinding, mSearcher,
 				mDispatcher, mContentTypes, PageUtil, Highlight, i18nUtil, SyntaxModelWirer,  mThemePreferences, mThemeData, mThemeChooser) {
 	
 var exports = exports || {};
@@ -512,6 +512,12 @@ exports.setUpEditor = function(serviceRegistry, preferences, isReadOnly){
 	var syntaxChecker = new mSyntaxchecker.SyntaxChecker(serviceRegistry, editor);
 	editor.addEventListener("InputChanged", function(evt) { //$NON-NLS-0$
 		syntaxChecker.checkSyntax(inputManager.getContentType(), evt.title, evt.message, evt.contents);
+	});
+	
+	
+	var markOccurrence = new mMarkOccurrences.MarkOccurrences(serviceRegistry, editor);
+	editor.addEventListener("InputChanged", function(evt) { //$NON-NLS-0$
+		markOccurrence.findOccurrences(inputManager.getContentType(), evt.title, evt.message, evt.contents);
 	});
 	
 	var filteredProviders;
